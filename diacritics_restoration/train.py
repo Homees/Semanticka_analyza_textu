@@ -302,19 +302,19 @@ if __name__ == "__main__":
                 
     epochs = range(1, 74)
     
-    plt.plot(epochs, results_dict['dev_char'], 'g', label='character accuracy')
-    plt.plot(epochs, results_dict['dev_word'], 'b', label='word accuracy')
+    plt.plot(epochs, results_dict.get('dev_char'), 'g', label='character accuracy')
+    plt.plot(epochs, results_dict.get('dev_word'), 'b', label='word accuracy')
     plt.title('Word and Character accuracy for validation set')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
-    plt.savefig('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1_source.txt', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/char_accuracy.png')
+    plt.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/char_accuracy.png')
     
-    plt.plot(epochs, results_dict['test_char'], 'g', label='character accuracy')
-    plt.plot(epochs, results_dict['test_word'], 'b', label='word accuracy')
+    plt.plot(epochs, results_dict.get('test_char'), 'g', label='character accuracy')
+    plt.plot(epochs, results_dict.get('test_word'), 'b', label='word accuracy')
     plt.title('Word and Character accuracy for testing set')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
-    plt.savefig('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1_source.txt', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/word_accuracy.png')
+    plt.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/word_accuracy.png')
     
