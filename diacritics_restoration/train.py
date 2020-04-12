@@ -214,6 +214,13 @@ if __name__ == "__main__":
     # Train
     print('Training')
     sys.stdout.flush()
+    
+    results_dict = {}
+    results_dict['dev_char'] = list()
+    results_dict['dev_word'] = list()
+    results_dict['test_char'] = list()
+    results_dict['test_word'] = list()
+                
     for epoch in range(args.epochs):
         dataset.reset_batch_pointer()
         for batch_ind in range(dataset.num_batches):
@@ -229,11 +236,6 @@ if __name__ == "__main__":
                 string_summary = "{}/{}, epoch: {}, time/batch = {:.3f}".format(step_number,
                                                                                 args.epochs * dataset.num_batches,
                                                                                 epoch, end - start)
-                results_dict = {}
-                results_dict['dev_char'] = list()
-                results_dict['dev_word'] = list()
-                results_dict['test_char'] = list()
-                results_dict['test_word'] = list()
                 
                 char_accuracy = 0
                 word_accuracy = 0
@@ -272,9 +274,9 @@ if __name__ == "__main__":
                         metric_end_time = time.time()
                         
                         if metric_name == "char_accuracy":
-                            char_accuracy = result
+                            char_accuracy = round(result, 6)
                         if metric_name == "word_accuracy":
-                            word_accuracy = result
+                            word_accuracy = round(result, 6)
                         
                         string_summary += "\n    {}:{:.6f}:{}".format(metric_name, result,
                                                                       metric_end_time - metric_start_time)
