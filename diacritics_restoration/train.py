@@ -8,6 +8,7 @@ import os
 import sys
 import time
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from glob import glob
 
 import numpy as np
@@ -228,6 +229,7 @@ if __name__ == "__main__":
                 string_summary = "{}/{}, epoch: {}, time/batch = {:.3f}".format(step_number,
                                                                                 args.epochs * dataset.num_batches,
                                                                                 epoch, end - start)
+                results_dict = {}
                 for eval_set_name in evaluation_sets.keys():
                     print('Evaluating {}'.format(eval_set_name))
                     string_summary += "\n  {}".format(eval_set_name)
@@ -255,14 +257,22 @@ if __name__ == "__main__":
                     eval_set_middle_time = time.time()
 
                     summaries = []
+                    char_accuracy = []
+                    word_accuracy = []
                     for metric_name, metric_fn in evaluation_metrics.items():
                         print('  --metric: {}'.format(metric_name))
                         metric_start_time = time.time()
                         result = metric_fn(predictions, lengths, targets, target_char_vocab)
                         metric_end_time = time.time()
+                        
+                        if metric_name == 'char_accuracy':
+                            char_accuracy.append(result)
+                        if metric_name == 'word_accuracy':
+                            word_accuracy.append(result)
+                        
                         string_summary += "\n    {}:{:.6f}:{}".format(metric_name, result,
                                                                       metric_end_time - metric_start_time)
-
+                        
                         summaries.append(
                             tf.Summary.Value(tag='{}_{}'.format(eval_set_name, metric_name), simple_value=result))
 
@@ -273,6 +283,13 @@ if __name__ == "__main__":
 
                     summary_writer.add_summary(tf.Summary(value=summaries), global_step=step_number)
 
+                if eval_set_name == 'dev':
+                    results_dict['dev'].append(char_accuracy)
+                    results_dict['dev'].append(word_accuracy)
+                if eval_set_name == 'test':
+                    results_dict['test'].append(char_accuracy)
+                    results_dict['test'].append(word_accuracy)
+                    
                 eval_time_end = time.time()
                 string_summary += "\n Evaluation took : {}".format(eval_time_end - eval_time_start)
 
@@ -282,3 +299,24 @@ if __name__ == "__main__":
             if step_number % args.save_every == 0:
                 checkpoint_path = os.path.join(save_model_dir, 'model.ckpt')
                 network.saver.save(network.session, checkpoint_path, global_step=step_number)
+                
+    loss_dev = results_dict['dev']
+    loss_test = results_dict['test']
+    epochs = range(1, 74)
+    
+    plt.plot(epochs, loss_dev[0], 'g', label='character accuracy')
+    plt.plot(epochs, loss_test[0], 'b', label='word accuracy')
+    plt.title('Word and Character accuracy for validation set')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.savefig('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1_source.txt', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/char_accuracy.png')
+    
+    plt.plot(epochs, loss_dev[1], 'g', label='character accuracy')
+    plt.plot(epochs, loss_test[1], 'b', label='word accuracy')
+    plt.title('Word and Character accuracy for testing set')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.savefig('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1_source.txt', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/word_accuracy.png')
+    
