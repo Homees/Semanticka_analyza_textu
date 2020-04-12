@@ -230,8 +230,14 @@ if __name__ == "__main__":
                                                                                 args.epochs * dataset.num_batches,
                                                                                 epoch, end - start)
                 results_dict = {}
+                results_dict['dev_char'] = list()
+                results_dict['dev_word'] = list()
+                results_dict['test_char'] = list()
+                results_dict['test_word'] = list()
+                
                 char_accuracy = 0
                 word_accuracy = 0
+                
                 for eval_set_name in evaluation_sets.keys():
                     print('Evaluating {}'.format(eval_set_name))
                     string_summary += "\n  {}".format(eval_set_name)
@@ -276,6 +282,8 @@ if __name__ == "__main__":
                         summaries.append(
                             tf.Summary.Value(tag='{}_{}'.format(eval_set_name, metric_name), simple_value=result))
 
+                        print('Result set values: {}'.format(results_dict))
+                        
                     eval_set_end_time = time.time()
 
                     string_summary += "\n      {}:{}:{}".format(eval_set_name, eval_set_end_time - eval_set_start_time,
@@ -284,11 +292,11 @@ if __name__ == "__main__":
                     summary_writer.add_summary(tf.Summary(value=summaries), global_step=step_number)
 
                     if eval_set_name == 'dev':
-                        results_dict.setdefault('dev_char', []).append(char_accuracy)
-                        results_dict.setdefault('dev_word', []).append(word_accuracy)
+                        results_dict['dev_char'].append(char_accuracy)
+                        results_dict['dev_word'].append(word_accuracy)
                     else:
-                        results_dict.setdefault('test_char', []).append(char_accuracy)
-                        results_dict.setdefault('test_word', []).append(word_accuracy)
+                        results_dict['test_char'].append(char_accuracy)
+                        results_dict['test_word'].append(word_accuracy)
                     
                 eval_time_end = time.time()
                 string_summary += "\n Evaluation took : {}".format(eval_time_end - eval_time_start)
