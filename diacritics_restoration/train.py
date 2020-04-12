@@ -300,20 +300,18 @@ if __name__ == "__main__":
                 checkpoint_path = os.path.join(save_model_dir, 'model.ckpt')
                 network.saver.save(network.session, checkpoint_path, global_step=step_number)
                 
-    loss_dev = results_dict['dev']
-    loss_test = results_dict['test']
     epochs = range(1, 74)
     
-    plt.plot(epochs, loss_dev[0], 'g', label='character accuracy')
-    plt.plot(epochs, loss_test[0], 'b', label='word accuracy')
+    plt.plot(epochs, results_dict['dev_char'], 'g', label='character accuracy')
+    plt.plot(epochs, results_dict['dev_word'], 'b', label='word accuracy')
     plt.title('Word and Character accuracy for validation set')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
     plt.legend()
     plt.savefig('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1_source.txt', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/char_accuracy.png')
     
-    plt.plot(epochs, loss_dev[1], 'g', label='character accuracy')
-    plt.plot(epochs, loss_test[1], 'b', label='word accuracy')
+    plt.plot(epochs, results_dict['test_char'], 'g', label='character accuracy')
+    plt.plot(epochs, results_dict['test_word'], 'b', label='word accuracy')
     plt.title('Word and Character accuracy for testing set')
     plt.xlabel('Epochs')
     plt.ylabel('Accuracy')
