@@ -230,6 +230,8 @@ if __name__ == "__main__":
                                                                                 args.epochs * dataset.num_batches,
                                                                                 epoch, end - start)
                 results_dict = {}
+                char_accuracy = 0
+                word_accuracy = 0
                 for eval_set_name in evaluation_sets.keys():
                     print('Evaluating {}'.format(eval_set_name))
                     string_summary += "\n  {}".format(eval_set_name)
@@ -257,8 +259,6 @@ if __name__ == "__main__":
                     eval_set_middle_time = time.time()
 
                     summaries = []
-                    char_accuracy = []
-                    word_accuracy = []
                     for metric_name, metric_fn in evaluation_metrics.items():
                         print('  --metric: {}'.format(metric_name))
                         metric_start_time = time.time()
@@ -266,9 +266,9 @@ if __name__ == "__main__":
                         metric_end_time = time.time()
                         
                         if metric_name == 'char_accuracy':
-                            char_accuracy.append(result)
-                        if metric_name == 'word_accuracy':
-                            word_accuracy.append(result)
+                            char_accuracy = result
+                        else:
+                            word_accuracy = result
                         
                         string_summary += "\n    {}:{:.6f}:{}".format(metric_name, result,
                                                                       metric_end_time - metric_start_time)
@@ -283,12 +283,12 @@ if __name__ == "__main__":
 
                     summary_writer.add_summary(tf.Summary(value=summaries), global_step=step_number)
 
-                if eval_set_name == 'dev':
-                    results_dict['dev_char'] = char_accuracy
-                    results_dict['dev_word'] = word_accuracy
-                if eval_set_name == 'test':
-                    results_dict['test_char'] = char_accuracy
-                    results_dict['test_word'] = word_accuracy
+                    if eval_set_name == 'dev':
+                        results_dict.setdefault('dev_char', []).append(char_accuracy)
+                        results_dict.setdefault('dev_word', []).append(word_accuracy)
+                    else:
+                        results_dict.setdefault('test_char', []).append(char_accuracy)
+                        results_dict.setdefault('test_word', []).append(word_accuracy)
                     
                 eval_time_end = time.time()
                 string_summary += "\n Evaluation took : {}".format(eval_time_end - eval_time_start)
@@ -300,20 +300,20 @@ if __name__ == "__main__":
                 checkpoint_path = os.path.join(save_model_dir, 'model.ckpt')
                 network.saver.save(network.session, checkpoint_path, global_step=step_number)
                 
-    epochs = range(1, 74)
+    epochs = range(0, int(round(args.epochs * dataset.num_batches / 1000)) + 1)
     
-    plt.plot(epochs, results_dict.get('dev_char'), 'g', label='character accuracy')
+    plt.plot(epochs, results_dict.get('dev_char'), 'r', label='character accuracy')
     plt.plot(epochs, results_dict.get('dev_word'), 'b', label='word accuracy')
     plt.title('Word and Character accuracy for validation set')
-    plt.xlabel('Epochs')
+    plt.xlabel('Step')
     plt.ylabel('Accuracy')
     plt.legend()
     plt.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/char_accuracy.png')
     
-    plt.plot(epochs, results_dict.get('test_char'), 'g', label='character accuracy')
+    plt.plot(epochs, results_dict.get('test_char'), 'r', label='character accuracy')
     plt.plot(epochs, results_dict.get('test_word'), 'b', label='word accuracy')
     plt.title('Word and Character accuracy for testing set')
-    plt.xlabel('Epochs')
+    plt.xlabel('Step')
     plt.ylabel('Accuracy')
     plt.legend()
     plt.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/word_accuracy.png')
