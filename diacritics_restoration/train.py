@@ -271,9 +271,9 @@ if __name__ == "__main__":
                         result = metric_fn(predictions, lengths, targets, target_char_vocab)
                         metric_end_time = time.time()
                         
-                        if metric_name == 'char_accuracy':
+                        if metric_name == "char_accuracy":
                             char_accuracy = result
-                        else:
+                        if metric_name == "word_accuracy":
                             word_accuracy = result
                         
                         string_summary += "\n    {}:{:.6f}:{}".format(metric_name, result,
@@ -281,8 +281,6 @@ if __name__ == "__main__":
                         
                         summaries.append(
                             tf.Summary.Value(tag='{}_{}'.format(eval_set_name, metric_name), simple_value=result))
-
-                        print('Result set values: {}'.format(results_dict))
                         
                     eval_set_end_time = time.time()
 
@@ -291,12 +289,14 @@ if __name__ == "__main__":
 
                     summary_writer.add_summary(tf.Summary(value=summaries), global_step=step_number)
 
-                    if eval_set_name == 'dev':
+                    if eval_set_name == "dev":
                         results_dict['dev_char'].append(char_accuracy)
                         results_dict['dev_word'].append(word_accuracy)
-                    else:
+                    if eval_set_name == "test":
                         results_dict['test_char'].append(char_accuracy)
                         results_dict['test_word'].append(word_accuracy)
+                        
+                    print('Result set values: {}'.format(results_dict))
                     
                 eval_time_end = time.time()
                 string_summary += "\n Evaluation took : {}".format(eval_time_end - eval_time_start)
