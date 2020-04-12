@@ -220,6 +220,8 @@ if __name__ == "__main__":
     results_dict['dev_word'] = list()
     results_dict['test_char'] = list()
     results_dict['test_word'] = list()
+    
+    print('Pocet epochov ', range(0, int(round(args.epochs * dataset.num_batches / 1000)) + 1))
                 
     for epoch in range(args.epochs):
         dataset.reset_batch_pointer()
@@ -312,16 +314,16 @@ if __name__ == "__main__":
                 
     epochs = range(0, int(round(args.epochs * dataset.num_batches / 1000)) + 1)
     
-    plt.plot(epochs, results_dict.get('dev_char'), 'r', label='character accuracy')
-    plt.plot(epochs, results_dict.get('dev_word'), 'b', label='word accuracy')
+    plt.plot(epochs, results_dict['dev_char'], 'r', label='character accuracy')
+    plt.plot(epochs, results_dict['dev_word'], 'b', label='word accuracy')
     plt.title('Word and Character accuracy for validation set')
     plt.xlabel('Step')
     plt.ylabel('Accuracy')
     plt.legend()
     plt.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/char_accuracy.png')
     
-    plt.plot(epochs, results_dict.get('test_char'), 'r', label='character accuracy')
-    plt.plot(epochs, results_dict.get('test_word'), 'b', label='word accuracy')
+    plt.plot(epochs, results_dict['test_char'], 'r', label='character accuracy')
+    plt.plot(epochs, results_dict['test_word'], 'b', label='word accuracy')
     plt.title('Word and Character accuracy for testing set')
     plt.xlabel('Step')
     plt.ylabel('Accuracy')
