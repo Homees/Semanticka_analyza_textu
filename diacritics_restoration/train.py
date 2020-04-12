@@ -284,11 +284,11 @@ if __name__ == "__main__":
                     summary_writer.add_summary(tf.Summary(value=summaries), global_step=step_number)
 
                 if eval_set_name == 'dev':
-                    results_dict['dev'].append(char_accuracy)
-                    results_dict['dev'].append(word_accuracy)
+                    results_dict['dev_char'] = char_accuracy
+                    results_dict['dev_word'] = word_accuracy
                 if eval_set_name == 'test':
-                    results_dict['test'].append(char_accuracy)
-                    results_dict['test'].append(word_accuracy)
+                    results_dict['test_char'] = char_accuracy
+                    results_dict['test_word'] = word_accuracy
                     
                 eval_time_end = time.time()
                 string_summary += "\n Evaluation took : {}".format(eval_time_end - eval_time_start)
