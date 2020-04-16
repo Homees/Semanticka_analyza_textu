@@ -62,7 +62,7 @@ for line in fp:
     train_clean_sentences.append(cleaned)
 
 random.shuffle(train_clean_sentences)
-vectorizer = TfidfVectorizer(min_df=1, max_df=0.95, max_features=8000, stop_words=stemming.stopWords)
+vectorizer = TfidfVectorizer()
 tf_idf_matrix = vectorizer.fit_transform(train_clean_sentences)
 X = tf_idf_matrix.todense()
 
