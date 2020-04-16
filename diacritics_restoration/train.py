@@ -8,6 +8,8 @@ import os
 import sys
 import time
 import tensorflow as tf
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from glob import glob
 
@@ -221,8 +223,9 @@ if __name__ == "__main__":
     results_dict['test_char'] = list()
     results_dict['test_word'] = list()
     
-    print('Pocet epochov ', range(0, int(round(args.epochs * dataset.num_batches / 1000)) + 1))
-                
+    print('Pocet epochov ', len(range(0, int(round(args.epochs * dataset.num_batches / 1000)))))
+    
+    print(results_dict['dev_char'])            
     for epoch in range(args.epochs):
         dataset.reset_batch_pointer()
         for batch_ind in range(dataset.num_batches):
@@ -312,21 +315,21 @@ if __name__ == "__main__":
                 checkpoint_path = os.path.join(save_model_dir, 'model.ckpt')
                 network.saver.save(network.session, checkpoint_path, global_step=step_number)
                 
-    epochs = range(0, int(round(args.epochs * dataset.num_batches / 1000)) + 1)
+    epochs = range(0, int(round(args.epochs * dataset.num_batches / 1000)))
     
     plt.plot(epochs, results_dict['dev_char'], 'r', label='character accuracy')
-    plt.plot(epochs, results_dict['dev_word'], 'b', label='word accuracy')
+    plt.plot(epochs, results_dict['dev_word'], 'g', label='word accuracy')
     plt.title('Word and Character accuracy for validation set')
     plt.xlabel('Step')
     plt.ylabel('Accuracy')
     plt.legend()
-    plt.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/char_accuracy.png')
+    plt.savefig('test_texts/char_accuracy.png')
     
-    plt.plot(epochs, results_dict['test_char'], 'r', label='character accuracy')
+    plt.plot(epochs, results_dict['test_char'], 'y', label='character accuracy')
     plt.plot(epochs, results_dict['test_word'], 'b', label='word accuracy')
     plt.title('Word and Character accuracy for testing set')
     plt.xlabel('Step')
     plt.ylabel('Accuracy')
     plt.legend()
-    plt.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/word_accuracy.png')
+    plt.savefig('test_texts/word_accuracy.png')
     
