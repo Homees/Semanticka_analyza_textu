@@ -1,0 +1,6 @@
+train_inputs input_train.txt
+train_targets target_train.txt
+dev_inputs input_dev.txt
+dev_targets target_dev.txt
+test_inputs input_test.txt
+test_targets target_test.txt
