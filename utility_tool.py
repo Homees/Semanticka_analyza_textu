@@ -137,6 +137,6 @@ def compare_files(file_A, file_B):
 
 #%%
 if __name__ == '__main__':
-   file_parser('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/all_emails.csv', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/all_undiacritized_emails.txt')
+   #file_parser('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/all_emails.csv', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/all_undiacritized_emails.txt')
    #remove_diacritics('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/wiki_text1.txt', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1.txt')
-   #compare_files('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1_source.txt', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/diacritized_wiki1.txt')
+   compare_files('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/all_diacritized_emails.txt', '/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/lm_diacritized_emails.txt')

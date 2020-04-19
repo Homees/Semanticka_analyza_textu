@@ -47,7 +47,10 @@ exclude = set(string.punctuation)
   
 #%%
 if __name__ == '__main__':
-    test_sentences = ["minul mesiac splnil podmienk polovičn cenu vedeni účtu strhnut poplatok pln výšk mal platbu kart e pravideln platbu inkas sporeni mám mesiac účtu idú peniah vkladn knižku pýtam strhnut poplatok pln výšk goliat ivet"]
+    test_sentences = ["dobrý deň minulý mesiac som splnil podmienky na polovičnú cenu za vedenie účtu a bol mi strhnutý poplatok v plnej výške mal som platbu kartou cez e pravidelnú platbu inkaso a sporenie mám tiež každý mesiac mi z účtu idu peniaze na vkladnú knížku pytam sa prečo mi bol strhnutý poplatok v plnej výške dakujem  goliatová iveta",
+                      " dobrý deň  chcela by som sa vas opytať na jednu otázkuzaložila som si šikovné sporenie a pani ktorá mi ho uzatvárala mi povedala že všetko si budem moc kontrolovať a vidite cez internet bankingále zatiaľ od prvého prevodu a už aj druhého som na mojom konte nevidela  za pomoc vopred dakujem  andrea lommele  goliatová iveta",
+                      "príkaz nie je možné zadať z dôvodu neprípustného dátumu splatnosti alebo obmedzenej funkčnosti systému v prípade otázok kontaktujte sporotel tel this message has been analyzed and no issues were discovered goliatová iveta",
+                      "dobrý deň  pri zmene hesla mi v druhom kroku neprichádza autorizačný kod na mobilný telefón tj zmenu hesla nemôžem dokončiť  dakujem za preverenie s pozdravom jk goliatová iveta"]
 
     kmeans = pickle.load(open("/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/kmeans_model.pickle", "rb"))
     vectorizer = pickle.load(open("/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tfidf_model.pickle", "rb"))
