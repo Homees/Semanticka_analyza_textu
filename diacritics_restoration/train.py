@@ -317,20 +317,19 @@ if __name__ == "__main__":
                 
     epochs = range(0, int(round(args.epochs * dataset.num_batches / 1000)))
     
-    fig, (ax1, ax2) = plt.subplots(2)
+    fig, (ax1, ax2) = plt.subplots(2, figsize=(16, 16))
     ax1.plot(epochs, results_dict['dev_char'], 'r', label='character accuracy')
     ax1.plot(epochs, results_dict['dev_word'], 'g', label='word accuracy')
-    ax1.title('Word and Character accuracy for validation set')
-    ax1.xlabel('Step')
-    ax1.ylabel('Accuracy')
+    ax1.set_title('Word and Character accuracy for validation set')
+    ax1.set_xlabel('Step (x1000)')
+    ax1.set_ylabel('Accuracy')
     ax1.legend()
-    fig.savefig('test_texts/char_accuracy.png')
     
     ax2.plot(epochs, results_dict['test_char'], 'y', label='character accuracy')
     ax2.plot(epochs, results_dict['test_word'], 'b', label='word accuracy')
-    ax2.title('Word and Character accuracy for testing set')
-    ax2.xlabel('Step')
-    ax2.ylabel('Accuracy')
+    ax2.set_title('Word and Character accuracy for testing set')
+    ax2.set_xlabel('Step (x1000)')
+    ax2.set_ylabel('Accuracy')
     ax2.legend()
-    fig.savefig('test_texts/word_accuracy.png')
     
+    fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/accuracy_plot.png', dpi=400)
