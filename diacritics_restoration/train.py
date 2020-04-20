@@ -332,4 +332,4 @@ if __name__ == "__main__":
     ax2.set_ylabel('Accuracy')
     ax2.legend()
     
-    fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/accuracy_plot.png', dpi=400)
+    fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/accuracy_plot.png', dpi=300)
