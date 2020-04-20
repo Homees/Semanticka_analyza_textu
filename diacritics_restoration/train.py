@@ -315,7 +315,7 @@ if __name__ == "__main__":
                 checkpoint_path = os.path.join(save_model_dir, 'model.ckpt')
                 network.saver.save(network.session, checkpoint_path, global_step=step_number)
                 
-    epochs = range(0, int(round(args.epochs * dataset.num_batches / 1000)))
+    epochs = range(0, len(results_dict['dev_char']))
     
     fig, (ax1, ax2) = plt.subplots(2, figsize=(16, 16))
     ax1.plot(epochs, results_dict['dev_char'], 'r', label='character accuracy')
