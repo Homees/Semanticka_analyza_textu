@@ -320,7 +320,7 @@ if __name__ == "__main__":
     fig, (ax1, ax2) = plt.subplots(2, figsize=(16, 16))
     ax1.plot(epochs, results_dict['dev_char'], 'r', label='character accuracy')
     ax1.plot(epochs, results_dict['dev_word'], 'g', label='word accuracy')
-    ax1.set_title('Word and Character accuracy for validation set')
+    ax1.set_title('Word and Character accuracy for validation set for number of epochs: %d' % args.epochs)
     ax1.set_xlabel('Step (x1000)')
     ax1.set_ylabel('Accuracy')
     ax1.grid()
@@ -328,7 +328,7 @@ if __name__ == "__main__":
     
     ax2.plot(epochs, results_dict['test_char'], 'y', label='character accuracy')
     ax2.plot(epochs, results_dict['test_word'], 'b', label='word accuracy')
-    ax2.set_title('Word and Character accuracy for testing set')
+    ax2.set_title('Word and Character accuracy for testing set for number of epochs: %d' % args.epochs)
     ax2.set_xlabel('Step (x1000)')
     ax2.set_ylabel('Accuracy')
     ax2.grid()
