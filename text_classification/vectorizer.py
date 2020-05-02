@@ -1,29 +1,40 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr 13 15:32:03 2020
+Created on Thu Apr 23 20:52:51 2020
 
 @author: 973065
 """
 
 import numpy as np 
 import pandas as pd 
-import matplotlib.pyplot as plt
 import seaborn as sns
+import matplotlib.pyplot as plt
 import string
-import re
 import codecs
 import pickle
+import re
+import random
+
 from sklearn.feature_extraction import text
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.cluster import KMeans
-from nltk.tokenize import RegexpTokenizer
-from nltk.stem.snowball import SnowballStemmer
-%matplotlib inline
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import Normalizer
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import normalize
+from sklearn.preprocessing import MinMaxScaler
 
 from numpy import unicode
-from sklearn.decomposition import PCA
-from sklearn.manifold import TSNE
+from scipy import sparse
+from time import time
+from itertools import cycle
+from itertools import product
+%matplotlib inline
 
+from sklearn.decomposition import TruncatedSVD
+from sklearn.manifold import TSNE
+from sklearn import metrics
+
+from scipy.spatial.distance import cdist
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -48,6 +59,8 @@ stop_words = {"a", "aby", "aj", "ak", "ako", "ale", "alebo", "and", "ani", "áno
              'mám', 'vás', 'chcem', 'dás', 'začk'}
 exclude = set(string.punctuation)
 
+
+#%%
 def stem(word, aggressive=False):
     if not isinstance(word, unicode):
         word = word.decode("utf8")
@@ -218,7 +231,100 @@ def clean(doc):
     processed = re.sub(r"\d+", "", normalized)
     y = processed.split()
     return y
-  
+
+
+def map_to_list(emails, key):
+    results = []
+
+    for email in emails:
+        if key not in email:
+            results.append('')
+        else:
+            results.append(email[key])
+
+    return results
+
+
+
+def top_tfidf_feats(row, features, top_n=20):
+    topn_ids = np.argsort(row)[::-1][:top_n]
+    top_feats = [(features[i], row[i]) for i in topn_ids]
+    df = pd.DataFrame(top_feats, columns=['features', 'score'])
+    return df
+
+
+
+def top_feats_in_doc(X, features, row_id, top_n=25):
+    row = np.squeeze(X[row_id].toarray())
+    return top_tfidf_feats(row, features, top_n)
+
+
+def top_mean_feats(X, features, grp_ids=None, min_tfidf=0.1, top_n=25):
+    if grp_ids:
+        D = np.asarray(X[grp_ids])
+    else:
+        D = np.asarray(X)
+        
+    D[D < min_tfidf] = 0
+    tfidf_means = np.mean(D, axis=0)
+    return top_tfidf_feats(tfidf_means, features, top_n)
+
+
+def top_feats_per_cluster(X, y, features, min_tfidf=0.1, top_n=25):
+    dfs = []
+    labels = np.unique(y)
+    
+    for label in labels:
+        ids = np.where(y==label) 
+        feats_df = top_mean_feats(X, features, ids, min_tfidf=min_tfidf, top_n=top_n)
+        feats_df.label = label
+        dfs.append(feats_df)
+    return dfs
+
+
+def plot_tfidf_classfeats_h(dfs):
+    fig = plt.figure(figsize=(20, 10), facecolor="w")
+    x = np.arange(len(dfs[0]))
+
+    for i, df in enumerate(dfs):
+        ax = fig.add_subplot(1, len(dfs), i+1)
+        ax.spines["top"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.set_frame_on(False)
+        ax.get_xaxis().tick_bottom()
+        ax.get_yaxis().tick_left()
+        ax.set_xlabel("Tf-Idf Score", labelpad=16, fontsize=14)
+        ax.set_title("cluster = " + str(df.label), fontsize=16)
+        ax.ticklabel_format(axis='x', style='sci', scilimits=(-2,2))
+        ax.barh(x, df.score, align='center', color='#7530FF')
+        ax.set_yticks(x)
+        ax.set_ylim([-1, x[-1]+1])
+        yticks = ax.set_yticklabels(df.features)
+        plt.subplots_adjust(bottom=0.09, right=0.97, left=0.15, top=0.95, wspace=0.52)
+    plt.show()
+    
+    
+def select_n_components(var_ratio, goal_var: float) -> int:
+    # Set initial variance explained so far
+    total_variance = 0.0
+    # Set initial number of features
+    n_components = 0
+    
+    # For the explained variance of each feature:
+    for explained_variance in var_ratio:
+        # Add the explained variance to the total
+        total_variance += explained_variance
+        # Add one to the number of components
+        n_components += 1
+        # If we reach our goal level of explained variance
+        if total_variance >= goal_var:
+            # End the loop
+            break
+            
+    # Return the number of components
+    return n_components
+    
+
 #%%
 if __name__ == '__main__':
     path = "/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/emails.txt"
@@ -231,32 +337,90 @@ if __name__ == '__main__':
         cleaned = ' '.join(cleaned)
         train_clean_sentences.append(cleaned)
 
+    dataset = []
     random.shuffle(train_clean_sentences)
-    X = train_clean_sentences[:5]
-    print(X)
-    print()
+    dataset.append(train_clean_sentences[:2000])
+    dataset.append(train_clean_sentences[2000:4000])
+    dataset.append(train_clean_sentences[4000:6000])
     
-    dbscan = pickle.load(open("/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/dbscan_1.pickle", "rb"))
-    vectorizer = pickle.load(open("/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tfidf.pickle", "rb"))
-    test_data = vectorizer.transform(X)
+    vectorizer = TfidfVectorizer(stop_words=stop_words, max_features=10000, max_df=0.5, min_df=2)
+    
+    sparse_matrices = []
+    for data in dataset:
+        original_X = vectorizer.fit_transform(data)
+        feature_names = vectorizer.get_feature_names()
+        
+        sparse_matrix = original_X.toarray().sum(axis=0)
+        vocabulary_dict = {}
+        for key in feature_names:
+            feature_index = vectorizer.vocabulary_.get(key)
+            vocabulary_dict.update({key : sparse_matrix[feature_index]})
+        
+        vocabulary_dict = sorted(vocabulary_dict.items(), key=lambda x: x[1], reverse=True)
+        new_vocabulary = []
+        for val in vocabulary_dict:
+            new_vocabulary.append(val[0])
+        #print(vocabulary_dict[:50])
+         
+        vectorizer = TfidfVectorizer(vocabulary=new_vocabulary[:200], stop_words=stop_words, max_features=10000, max_df=0.5, min_df=2)
+        original_X = vectorizer.fit_transform(data)
+        sparse_matrices.append(original_X)
+        print(original_X.shape)
+        
+        break
     
     print("Performing dimensionality reduction using LSA")
-    t0 = time()
-    svd = TruncatedSVD(n_components=50)
-    tsne = TSNE(n_components=2)
-    normalizer = Normalizer()
-    scaler = MinMaxScaler()
-
-    X = svd.fit_transform(test_data)
-    X = tsne.fit_transform(X)
-    X = scaler.fit_transform(X)
-
-    explained_variance = svd.explained_variance_ratio_.sum()
-    print("done in %fs" % (time() - t0))
-    print("Explained variance of the SVD step: {}%".format(int(explained_variance * 100)))
-    print()
     
-    predicted_labels_k_means = dbscan.predict(X)
+    output_matrices = []
+    for matrix in sparse_matrices:
+        svd = TruncatedSVD(n_components=matrix.shape[1] - 1).fit(matrix)
+        explained_variance = svd.explained_variance_ratio_
+        
+        dim = [70, 80]
+        perplexity = [10, 20, 30, 40, 50]
+        lr = [20, 50, 100, 200, 500, 1000]
+        init = [500, 750, 1000, 2000]
+        cartesian_product = product(dim, perplexity, lr, init)
+        
+        for product in cartesian_product:
+            #n = select_n_components(explained_variance, product[0])
+            print('Number of dimentions %s: ' % product[0])
+            
+            t0 = time()
+            svd = TruncatedSVD(n_components=product[0])
+            tsne = TSNE(n_components=2, perplexity=product[1], learning_rate=product[2], n_iter=product[3])
+            scaler = MinMaxScaler()
+            lsa = make_pipeline(svd, scaler)
+        
+            X = svd.fit_transform(matrix)
+            X = scaler.fit_transform(X)
+            #X = lsa.fit_transform(matrix)
+            X = tsne.fit_transform(X)
+            output_matrices.append(X)
+            
+            fig, ax = plt.subplots(figsize=(10, 10))
+            print("perplexity: %s, learning rate: %s, n_init: %s, time: (%.3g sec)" % (product[1], product[2], product[3], time() - t0))
+            ax.scatter(X[:, 0], X[:, 1], c='b', cmap=plt.cm.Spectral)
+            ax.set_title("perplexity: %s, learning rate: %s, n_init: %s, time: (%.3g sec)" % (product[1], product[2], product[3], time() - t0))
+            ax.grid()
+            fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tsne_plots/'+str(product[0])+'_'+str(product[1])+'_'+str(product[2])+'_'+str(product[3]), dpi=200)
+            plt.show()
     
-    print(predicted_labels_k_means)
+            explained_variance = svd.explained_variance_ratio_.sum()
+            print("done in %fs" % (time() - t0))
+            print("Explained variance of the SVD step: {}%".format(int(explained_variance * 100)))
+            print()
+            
+        break
+            
+        """
+    
+    np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_1.npy', output_matrices[0])
+    #np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_2.npy', output_matrices[1])
+    #np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_3.npy', output_matrices[2])
+    sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_1.npz', sparse_matrices[0])
+    #sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_2.npz', sparse_matrices[1])
+    #sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_3.npz', sparse_matrices[2])
+    pickle.dump(vectorizer, open("/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tfidf.pickle", "wb"))
+    """
     

@@ -39,7 +39,8 @@ def file_parser(file1, file2):
                 if len(words) == 1 and word == 'text':
                     word_list.append('zaciatok_mailu:')
                     break
-                if ((len(word) > 20) or ('slspocloudouexchange' in word) or ('account' in word)):
+                if ((len(word) > 20) or ('slspocloudouexchange' in word) or ('account' in word)
+                    ('dakuj' in word)):
                     word_list.append('koniec_mailu:')
                     break
                 
@@ -79,7 +80,7 @@ def remove_diacritics(source_file, undiacrized_file):
         sys.exit()
         
     fw1 = open(undiacrized_file, "w", encoding="utf8")
-    fw2 = open("/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1_source.txt", "w", encoding="utf8")
+    fw2 = open("/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/undiacritized_wiki3_source.txt", "w", encoding="utf8")
         
     with open(source_file, "r", encoding="utf8") as fp:
         for line in fp:
@@ -118,7 +119,7 @@ def compare_files(file_A, file_B):
     for word1, word2 in zip(read_A.split(' '), read_B.split(' ')):
         total_words += 1
         if word1 != word2:
-            #print(word1, word2)
+            print(word1, word2)
             word_diff += 1
         
         for char1, char2 in zip(word1, word2):
@@ -137,6 +138,6 @@ def compare_files(file_A, file_B):
 
 #%%
 if __name__ == '__main__':
-   #file_parser('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/all_emails.csv', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/all_undiacritized_emails.txt')
-   #remove_diacritics('/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/wiki_text1.txt', '/u00/au973065/git_repo/oprava_diakritiky/diacritics_restoration/test_texts/undiacritized_wiki1.txt')
-   compare_files('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/all_diacritized_emails.txt', '/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/lm_diacritized_emails.txt')
+   #file_parser('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/all_emails.csv', '/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/all_undiacritized_emails.txt')
+   remove_diacritics('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/wiki_text3.txt', '/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/undiacritized_wiki3.txt')
+   #compare_files('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/undiacritized_wiki2_source.txt', '/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/diacritized_wiki2.txt')

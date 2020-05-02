@@ -323,6 +323,7 @@ if __name__ == "__main__":
     ax1.set_title('Word and Character accuracy for validation set')
     ax1.set_xlabel('Step (x1000)')
     ax1.set_ylabel('Accuracy')
+    ax1.grid()
     ax1.legend()
     
     ax2.plot(epochs, results_dict['test_char'], 'y', label='character accuracy')
@@ -330,6 +331,7 @@ if __name__ == "__main__":
     ax2.set_title('Word and Character accuracy for testing set')
     ax2.set_xlabel('Step (x1000)')
     ax2.set_ylabel('Accuracy')
+    ax2.grid()
     ax2.legend()
     
     fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/diacritics_restoration/test_texts/accuracy_plot.png', dpi=300)
