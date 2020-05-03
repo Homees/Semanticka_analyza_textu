@@ -322,7 +322,7 @@ if __name__ == "__main__":
     ax1.plot(epochs, results_dict['dev_word'], 'g', label='word accuracy')
     ax1.set_title('Word and Character accuracy for validation set for number of epochs: %d' % args.epochs)
     ax1.set_xlabel('Step (x1000)')
-    ax1.set_ylabel('Accuracy')
+    ax1.set_ylabel('Accuracy (x100)')
     ax1.grid()
     ax1.legend()
     
@@ -330,7 +330,7 @@ if __name__ == "__main__":
     ax2.plot(epochs, results_dict['test_word'], 'b', label='word accuracy')
     ax2.set_title('Word and Character accuracy for testing set for number of epochs: %d' % args.epochs)
     ax2.set_xlabel('Step (x1000)')
-    ax2.set_ylabel('Accuracy')
+    ax2.set_ylabel('Accuracy (x100)')
     ax2.grid()
     ax2.legend()
     
