@@ -343,7 +343,7 @@ if __name__ == '__main__':
     dataset.append(train_clean_sentences[2000:4000])
     dataset.append(train_clean_sentences[4000:6000])
     
-    vectorizer = TfidfVectorizer(stop_words=stop_words, max_features=10000, max_df=0.5, min_df=2)
+    vectorizer = TfidfVectorizer(stop_words=stop_words, max_features=10000)
     
     sparse_matrices = []
     for data in dataset:
@@ -362,65 +362,64 @@ if __name__ == '__main__':
             new_vocabulary.append(val[0])
         #print(vocabulary_dict[:50])
          
-        vectorizer = TfidfVectorizer(vocabulary=new_vocabulary[:200], stop_words=stop_words, max_features=10000, max_df=0.5, min_df=2)
+        vectorizer = TfidfVectorizer(vocabulary=new_vocabulary[:200], stop_words=stop_words, max_features=10000)
         original_X = vectorizer.fit_transform(data)
         sparse_matrices.append(original_X)
         print(original_X.shape)
-        
-        break
     
     print("Performing dimensionality reduction using LSA")
     
     output_matrices = []
     for matrix in sparse_matrices:
+        """
         svd = TruncatedSVD(n_components=matrix.shape[1] - 1).fit(matrix)
         explained_variance = svd.explained_variance_ratio_
         
-        dim = [70, 80]
-        perplexity = [10, 20, 30, 40, 50]
+        dim = [50, 60, 70, 80]
+        perplexity = [10, 20, 30, 40, 50, 60]
         lr = [20, 50, 100, 200, 500, 1000]
-        init = [500, 750, 1000, 2000]
+        init = [500, 750, 1000, 2000, 3000]
         cartesian_product = product(dim, perplexity, lr, init)
         
         for product in cartesian_product:
             #n = select_n_components(explained_variance, product[0])
             print('Number of dimentions %s: ' % product[0])
-            
-            t0 = time()
-            svd = TruncatedSVD(n_components=product[0])
-            tsne = TSNE(n_components=2, perplexity=product[1], learning_rate=product[2], n_iter=product[3])
-            scaler = MinMaxScaler()
-            lsa = make_pipeline(svd, scaler)
-        
-            X = svd.fit_transform(matrix)
-            X = scaler.fit_transform(X)
-            #X = lsa.fit_transform(matrix)
-            X = tsne.fit_transform(X)
-            output_matrices.append(X)
-            
-            fig, ax = plt.subplots(figsize=(10, 10))
-            print("perplexity: %s, learning rate: %s, n_init: %s, time: (%.3g sec)" % (product[1], product[2], product[3], time() - t0))
-            ax.scatter(X[:, 0], X[:, 1], c='b', cmap=plt.cm.Spectral)
-            ax.set_title("perplexity: %s, learning rate: %s, n_init: %s, time: (%.3g sec)" % (product[1], product[2], product[3], time() - t0))
-            ax.grid()
-            fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tsne_plots/'+str(product[0])+'_'+str(product[1])+'_'+str(product[2])+'_'+str(product[3]), dpi=200)
-            plt.show()
+        """
+        t0 = time()
+        svd = TruncatedSVD(n_components=50)
+        #tsne = TSNE(n_components=2, perplexity=product[1], learning_rate=product[2], n_iter=product[3])
+        tsne = TSNE(n_components=2, perplexity=50, learning_rate=200, n_iter=3000)
+        scaler = MinMaxScaler()
+        lsa = make_pipeline(svd, scaler)
     
+        #X = svd.fit_transform(matrix)
+        #X = scaler.fit_transform(X)
+        X = lsa.fit_transform(matrix)
+        X = tsne.fit_transform(X)
+        output_matrices.append(X)
+        
+        fig, ax = plt.subplots(figsize=(10, 10))
+        #print("perplexity: %s, learning rate: %s, n_init: %s, time: (%.3g sec)" % (product[1], product[2], product[3], time() - t0))
+        ax.scatter(X[:, 0], X[:, 1], c='b', cmap=plt.cm.Spectral)
+        #ax.set_title("perplexity: %s, learning rate: %s, n_init: %s, time: (%.3g sec)" % (product[1], product[2], product[3], time() - t0))
+        ax.grid()
+        #fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tsne_plots_1/'+str(product[0])+'_'+str(product[1])+'_'+str(product[2])+'_'+str(product[3]), dpi=250)
+        plt.show()
+            
+    """
             explained_variance = svd.explained_variance_ratio_.sum()
             print("done in %fs" % (time() - t0))
             print("Explained variance of the SVD step: {}%".format(int(explained_variance * 100)))
             print()
             
         break
-            
-        """
     
-    np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_1.npy', output_matrices[0])
-    #np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_2.npy', output_matrices[1])
-    #np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_3.npy', output_matrices[2])
-    sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_1.npz', sparse_matrices[0])
-    #sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_2.npz', sparse_matrices[1])
-    #sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_3.npz', sparse_matrices[2])
-    pickle.dump(vectorizer, open("/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tfidf.pickle", "wb"))
     """
+    np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_1.npy', output_matrices[0])
+    np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_2.npy', output_matrices[1])
+    np.save('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_3.npy', output_matrices[2])
+    sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_1.npz', sparse_matrices[0])
+    sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_2.npz', sparse_matrices[1])
+    sparse.save_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_3.npz', sparse_matrices[2])
+    pickle.dump(vectorizer, open("/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tfidf.pickle", "wb"))
     
