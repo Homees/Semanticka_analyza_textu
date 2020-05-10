@@ -99,14 +99,14 @@ def get_top_keywords(data, clusters, labels, n_terms, algorithm):
   
 #%%
 if __name__ == '__main__':
-    X = np.load('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_3.npy')
-    original_X = sparse.load_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_3.npz')
+    X = np.load('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/2d_matrix_1.npy')
+    original_X = sparse.load_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_1.npz')
     vectorizer = pickle.load(open('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tfidf.pickle', 'rb'))
     
     find_optimal_clusters(X, 40)
     find_optimal_clusters(original_X, 40)
     
-    true_k = 22
+    true_k = 28
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, figsize=(12, 40))
     
     t0 = time()
@@ -115,10 +115,11 @@ if __name__ == '__main__':
     labels = kmeans.labels_
     
     #plot_tsne_pca(original_X, clusters)
-    get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, kmeans)
+    #get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, kmeans)
     centers = kmeans.cluster_centers_
-        
-    colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(set(labels)))]
+    
+    labels_unique = np.unique(labels)
+    colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(labels_unique))]
     
     for k, col in zip(labels_unique, colors):
         members = labels == k
@@ -127,7 +128,7 @@ if __name__ == '__main__':
         ax1.scatter(cluster_center[0], cluster_center[1], c='r', marker='^', s=100, alpha=0.8)
         
     ax1.set_title('Kmeans clustering with number of clusters: %d done in %0.3fs' % (true_k, time() - t0))
-    ax1.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize='medium')
+    ax1.legend(bbox_to_anchor=(1.02, 1), loc='upper left', fontsize='medium')
     ax1.grid()
     #plt.show()
     
@@ -146,7 +147,7 @@ if __name__ == '__main__':
     labels = ms.labels_
     cluster_centers = ms.cluster_centers_
     
-    get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, ms)
+    #get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, ms)
     
     labels_unique = np.unique(labels)
     n_clusters_ = len(labels_unique)
@@ -163,7 +164,7 @@ if __name__ == '__main__':
         ax2.plot(cluster_center[0], cluster_center[1], 'o', label=k, markerfacecolor=tuple(col), markeredgecolor='k', markersize=14)
     
     ax2.set_title('Mean shift clustering with number of estimated clusters: %d done in %0.3fs' % (n_clusters_, time() - t0))
-    ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    ax2.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
     ax2.grid()
     #plt.show()
     
@@ -179,7 +180,7 @@ if __name__ == '__main__':
     core_samples_mask[db.core_sample_indices_] = True
     labels = db.labels_
     
-    get_top_keywords(original_X, labels, vectorizer.get_feature_names(), 8, db)
+    #get_top_keywords(original_X, labels, vectorizer.get_feature_names(), 8, db)
     
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
@@ -209,7 +210,7 @@ if __name__ == '__main__':
         ax3.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col), markeredgecolor='k', markersize=6)
     
     ax3.set_title('DBSCAN clustering with estimated number of clusters: %d done in %0.3fs' % (n_clusters_, time() - t0))
-    ax3.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    ax3.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
     ax3.grid()
     #plt.show()
     
@@ -219,12 +220,13 @@ if __name__ == '__main__':
     # #############################################################################
     # Compute Affinity Propagation
     t0 = time()
-    af = AffinityPropagation(damping=0.8, preference=-3500, verbose=True).fit(X)
+    af = AffinityPropagation(damping=0.8, preference=-3500, verbose=True)
+    clusters = af.fit_predict(X)
     cluster_centers_indices = af.cluster_centers_indices_
     labels = af.labels_
     
     n_clusters_ = len(cluster_centers_indices)
-    get_top_keywords(original_X, labels, vectorizer.get_feature_names(), 8, af)
+    #get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, af)
     
     print('Estimated number of clusters: %d' % n_clusters_)
     
@@ -242,12 +244,12 @@ if __name__ == '__main__':
             ax4.plot([cluster_center[0], x[0]], [cluster_center[1], x[1]], col)
     
     ax4.set_title('Affinity Propagation with estimated number of clusters: %d done in %0.3fs' % (n_clusters_, time() - t0))
-    ax4.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+    ax4.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
     ax4.grid()
     #plt.show()
     
     print('Affinity Propagation done in: %0.3fs' % (time() - t0))
     print()
     
-    fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/data_clustering_plots_3.png', dpi=300)
+    fig.savefig('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/data_clustering_plots_1.png', dpi=200)
     plt.show()
