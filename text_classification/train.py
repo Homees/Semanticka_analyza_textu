@@ -92,8 +92,9 @@ def get_top_keywords(data, clusters, labels, n_terms, algorithm):
     print('Geting top keywords for algorithm: %s' % algorithm)
     df = pd.DataFrame(data.todense()).groupby(clusters).mean()
     
-    for i,r in df.iterrows():
-        print('\nCluster {}'.format(i))
+    for i, r in df.iterrows():
+        print('\nCluster: {}'.format(i))
+        #print('\nWords in r: {}'.format(r))
         print(', '.join([labels[t] for t in np.argsort(r)[-n_terms:]]))    
     
   
@@ -103,8 +104,8 @@ if __name__ == '__main__':
     original_X = sparse.load_npz('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/data/sparse_matrix_1.npz')
     vectorizer = pickle.load(open('/u00/au973065/git_repo/Semanticka_analyza_textu/text_classification/save/tfidf.pickle', 'rb'))
     
-    find_optimal_clusters(X, 40)
-    find_optimal_clusters(original_X, 40)
+    #find_optimal_clusters(X, 40)
+    #find_optimal_clusters(original_X, 40)
     
     true_k = 28
     fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, figsize=(12, 40))
@@ -114,8 +115,8 @@ if __name__ == '__main__':
     clusters = kmeans.fit_predict(X)
     labels = kmeans.labels_
     
-    #plot_tsne_pca(original_X, clusters)
-    #get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, kmeans)
+    plot_tsne_pca(original_X, clusters)
+    get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, kmeans)
     centers = kmeans.cluster_centers_
     
     labels_unique = np.unique(labels)
@@ -147,7 +148,7 @@ if __name__ == '__main__':
     labels = ms.labels_
     cluster_centers = ms.cluster_centers_
     
-    #get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, ms)
+    get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, "Mean Shift")
     
     labels_unique = np.unique(labels)
     n_clusters_ = len(labels_unique)
@@ -180,7 +181,7 @@ if __name__ == '__main__':
     core_samples_mask[db.core_sample_indices_] = True
     labels = db.labels_
     
-    #get_top_keywords(original_X, labels, vectorizer.get_feature_names(), 8, db)
+    get_top_keywords(original_X, labels, vectorizer.get_feature_names(), 8, db)
     
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
@@ -226,7 +227,7 @@ if __name__ == '__main__':
     labels = af.labels_
     
     n_clusters_ = len(cluster_centers_indices)
-    #get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, af)
+    get_top_keywords(original_X, clusters, vectorizer.get_feature_names(), 8, af)
     
     print('Estimated number of clusters: %d' % n_clusters_)
     

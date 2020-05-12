@@ -105,12 +105,7 @@ def remove_diacritics(source_file, undiacrized_file):
 def compare_files(file_A, file_B):
     read_A = open(file_A, 'r', encoding="utf-8").read()
     read_B = open(file_B, 'r', encoding="utf-8").read()
-    
-    #words_A = read_A.replace(',', '').replace('.', '').replace('(', '').replace(')', '').replace('\n', '').replace('–', '').split(' ')
-    #words_B = read_B.replace(',', '').replace('.', '').replace('(', '').replace(')', '').replace('\n', '').replace('–', '').split(' ')
-    #chars_A = read_A.replace(',', '').replace('.', '').replace('(', '').replace(')', '').replace('\n', '').replace('–', '')
-    #chars_B = read_B.replace(',', '').replace('.', '').replace('(', '').replace(')', '').replace('\n', '').replace('–', '')
-        
+           
     char_diff = 0
     total_char = 0
     word_diff = 0

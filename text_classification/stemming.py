@@ -1,10 +1,21 @@
+#! /usr/bin/env python
+
+# -*- coding: utf8 -*-
+
 ''' Slovak stemmer
+
 Adapted from the Czech stemmer with the following copyright
+
     Copyright © 2010 Luís Gomes <luismsgomes@gmail.com>.
+
 It was also inspired by sumy:
+
     https://github.com/miso-belica/sumy/blob/dev/sumy/nlp/stemmers/czech.py
+
 Ported from the Java implementation available at:
+    
     http://members.unine.ch/jacques.savoy/clef/index.html
+
 '''
 from __future__ import division, print_function, unicode_literals
 
@@ -179,7 +190,7 @@ def _palatalise(word):
     return word[:-1]
 
 
-# Cleaning the text sentences so that punctuation marks, stop words &amp; digits are removed
+# Cleaning the text sentences so that punctuation marks, stop words and digits are removed
 def clean(doc):
     stop_free = " ".join([j for j in doc.lower().split() if j not in stopWords])
     punc_free = ''.join(ch for ch in stop_free if ch not in exclude)
